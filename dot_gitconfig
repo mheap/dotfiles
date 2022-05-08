@@ -9,8 +9,8 @@
     upstream = !git fetch upstream && git reset --hard upstream/main
 [pull]
 	ff = only
-[url "git@github.com:"]
-	insteadOf = https://github.com/
+[url "git@github.com:mheap"]
+	insteadOf = https://github.com/mheap
 [init]
 	defaultBranch = main
 [merge]
