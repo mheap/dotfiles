@@ -1,0 +1,94 @@
+eval "$(starship init zsh)"
+
+autoload -U promptinit; promptinit
+
+autoload -Uz compinit && compinit       # Loads completion modules
+setopt AUTO_MENU                        # Show completion menu on tab press
+setopt ALWAYS_TO_END                    # Move cursor after completion
+setopt COMPLETE_ALIASES                 # Allow autocompletion for aliases
+setopt COMPLETE_IN_WORD                 # Allow completion from middle of word
+setopt LIST_PACKED                      # Smallest completion menu
+setopt AUTO_PARAM_KEYS                  # Intelligent handling of characters
+setopt AUTO_PARAM_SLASH                 # after a completion
+setopt AUTO_REMOVE_SLASH                # Remove trailing slash when needed
+
+HISTFILE=~/.zsh_history
+HISTSIZE=100000
+SAVEHIST=100000
+setopt SHARE_HISTORY
+
+autoload edit-command-line; zle -N edit-command-line
+
+source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+
+# Vim!
+bindkey -v
+bindkey -M viins 'jj' vi-cmd-mode
+bindkey -M vicmd "^V" edit-command-line
+
+bindkey -M vicmd 'k' history-substring-search-up
+bindkey -M vicmd 'j' history-substring-search-down
+
+bindkey '^?' backward-delete-char
+bindkey '^h' backward-delete-char
+
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path "$HOME/.cache/zsh/completion/"
+zstyle ':completion:*:*:*:users' ignored-patterns '*'
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+
+
+export oss="$HOME/development/oss"
+export projects="$HOME/development/projects"
+export k="$HOME/development/kong"
+
+# ZPlug
+export ZPLUG_HOME=/usr/local/opt/zplug
+source $ZPLUG_HOME/init.zsh
+
+# Path
+export PATH="/Users/michael/.local/bin:/Users/michael/bin:/Users/michael/go/bin:/Users/michael/.composer/vendor/bin:$PATH"
+
+# Editors
+export EDITOR=vim
+export VISUAL=vim
+
+# Things that should only be installed on non-codespaces environments
+
+{{- if eq (env "CODESPACES") "" }}
+# Version Managers
+function loadnvm() {
+  export NVM_DIR="$HOME/.nvm"
+    [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
+    [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
+}
+
+eval "$(rbenv init - zsh)"
+
+# ZSH Plugins
+. /usr/local/etc/profile.d/z.sh
+
+# Helper functions
+{{ range (onepassword "ishqybkvyzgu5kg4ycsdapii4e").fields -}}
+{{   if eq .id "0392FBAD092D4943B2928F4A5FBCF075" -}}
+function token() {
+  export GITHUB_TOKEN='{{ .value -}}'
+  echo "GITHUB_TOKEN Set";
+}
+{{   end -}}
+{{ end }}
+
+function aws-personal(){
+  export AWS_PROFILE=personal
+}
+
+function aws-kong(){
+  export AWS_PROFILE=kong
+}
+
+source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
+source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
+
+{{- end }}
