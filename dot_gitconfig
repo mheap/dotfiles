@@ -1,0 +1,17 @@
+[user]
+  name = Michael Heap
+  email = m@michaelheap.com
+[core]
+	excludesfile = /Users/michael/.gitignore_global
+	defaultBranch = main
+[alias]
+    wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
+    upstream = !git fetch upstream && git reset --hard upstream/main
+[pull]
+	ff = only
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[init]
+	defaultBranch = main
+[merge]
+	conflictStyle = zdiff3
