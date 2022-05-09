@@ -1,8 +1,15 @@
+#zmodload zsh/zprof
 eval "$(starship init zsh)"
 
 autoload -U promptinit; promptinit
 
-autoload -Uz compinit && compinit       # Loads completion modules
+# Load Autocomplete, but only parse completion files once per day
+autoload -Uz compinit
+for dump in ~/.zcompdump(N.mh+24); do
+  compinit
+done
+compinit -C
+
 setopt AUTO_MENU                        # Show completion menu on tab press
 setopt ALWAYS_TO_END                    # Move cursor after completion
 setopt COMPLETE_ALIASES                 # Allow autocompletion for aliases
@@ -17,20 +24,30 @@ HISTSIZE=100000
 SAVEHIST=100000
 setopt SHARE_HISTORY
 
-autoload edit-command-line; zle -N edit-command-line
+# ZPlug
+export ZPLUG_HOME=/usr/local/opt/zplug
+{{- if eq (env "CODESPACES") "true" }}
+export ZPLUG_HOME=/workspaces/.zplug
+{{- end }}
+source $ZPLUG_HOME/init.zsh
 
-source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+# Plugins
+zplug "zsh-users/zsh-history-substring-search"
 
 # Vim!
 bindkey -v
 bindkey -M viins 'jj' vi-cmd-mode
 bindkey -M vicmd "^V" edit-command-line
 
-bindkey -M vicmd 'k' history-substring-search-up
-bindkey -M vicmd 'j' history-substring-search-down
+if zplug check zsh-users/zsh-history-substring-search; then
+  bindkey -M vicmd 'k' history-substring-search-up
+  bindkey -M vicmd 'j' history-substring-search-down
+fi
 
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
+
+autoload edit-command-line; zle -N edit-command-line
 
 zstyle ':completion:*' list-colors ''
 zstyle ':completion:*:*:*:*:*' menu select
@@ -43,10 +60,6 @@ zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[._-]=* r:|=*' 'l:|=* r:
 export oss="$HOME/development/oss"
 export projects="$HOME/development/projects"
 export k="$HOME/development/kong"
-
-# ZPlug
-export ZPLUG_HOME=/workspaces/.zplug
-source $ZPLUG_HOME/init.zsh
 
 # Path
 export PATH="/Users/michael/.local/bin:/Users/michael/bin:/Users/michael/go/bin:/Users/michael/.composer/vendor/bin:$PATH"
@@ -92,3 +105,12 @@ source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.z
 source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
 
 {{- end }}
+
+timezsh() {
+  shell=${1-$SHELL}
+  for i in $(seq 1 4); do /usr/bin/time $shell -i -c exit; done
+}
+
+zplug load
+
+#zprof # Output profile
