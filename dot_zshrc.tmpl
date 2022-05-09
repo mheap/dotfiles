@@ -33,6 +33,10 @@ source $ZPLUG_HOME/init.zsh
 
 # Plugins
 zplug "zsh-users/zsh-history-substring-search"
+zplug "zsh-users/zsh-syntax-highlighting"
+zplug plugins/kubectl, from:oh-my-zsh
+zplug "skywind3000/z.lua", use:z.lua.plugin.zsh
+zplug 'djui/alias-tips'
 
 # Vim!
 bindkey -v
@@ -77,11 +81,7 @@ function loadnvm() {
     [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"  # This loads nvm
     [ -s "/usr/local/opt/nvm/etc/bash_completion.d/nvm" ] && . "/usr/local/opt/nvm/etc/bash_completion.d/nvm"  # This loads nvm bash_completion
 }
-
 eval "$(rbenv init - zsh)"
-
-# ZSH Plugins
-. /usr/local/etc/profile.d/z.sh
 
 # Helper functions
 {{ range (onepassword "ishqybkvyzgu5kg4ycsdapii4e").fields -}}
