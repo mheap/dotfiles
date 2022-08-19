@@ -20,11 +20,15 @@ function setPercentScreen(bind, portion, key, index)
 end
 
 function setQuarterScreen(key, index)
-  setPercentScreen({"cmd", "alt", "ctrl"}, 4, key, index)
+  setPercentScreen({"cmd", "alt"}, 4, key, index)
 end
 
 function setThirdScreen(key, index)
   setPercentScreen({"cmd", "alt"}, 3, key, index)
+end
+
+function setHalfScreen(key, index)
+  setPercentScreen({"cmd", "alt"}, 2, key, index)
 end
 
 setQuarterScreen("Y", 0)
@@ -32,6 +36,15 @@ setQuarterScreen("U", 1)
 setQuarterScreen("I", 2)
 setQuarterScreen("O", 3)
 
-setThirdScreen("Y", 0)
-setThirdScreen("U", 1)
-setThirdScreen("I", 2)
+setThirdScreen("H", 0)
+setThirdScreen("J", 1)
+setThirdScreen("K", 2)
+
+setHalfScreen("N", 0)
+setHalfScreen("M", 1)
+
+-- Unusual sizing
+setPercentScreen({"cmd", "alt", "ctrl"}, 8, "N", 4)
+setPercentScreen({"cmd", "alt", "ctrl"}, 8, "M", 5)
+setPercentScreen({"cmd", "alt", "ctrl"}, 8, ",", 6)
+setPercentScreen({"cmd", "alt", "ctrl"}, 8, ".", 7)

@@ -1,5 +1,5 @@
 -- Wrap text
-hs.hotkey.bind({"cmd", "alt", "ctrl"}, "M", function()
+hs.hotkey.bind({"cmd", "alt", "ctrl"}, "'", function()
   -- Fetch URL from the system clipboard
   local linkUrl = hs.pasteboard.getContents()
 
