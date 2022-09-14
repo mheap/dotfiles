@@ -43,7 +43,13 @@ setThirdScreen("K", 2)
 setHalfScreen("N", 0)
 setHalfScreen("M", 1)
 
+setPercentScreen({"cmd", "alt"}, 1, ".", 0)
+
 -- Unusual sizing
+setPercentScreen({"cmd", "alt", "ctrl"}, 6, "J", 3)
+setPercentScreen({"cmd", "alt", "ctrl"}, 6, "K", 4)
+setPercentScreen({"cmd", "alt", "ctrl"}, 6, "L", 5)
+
 setPercentScreen({"cmd", "alt", "ctrl"}, 8, "N", 4)
 setPercentScreen({"cmd", "alt", "ctrl"}, 8, "M", 5)
 setPercentScreen({"cmd", "alt", "ctrl"}, 8, ",", 6)
