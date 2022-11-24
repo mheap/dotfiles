@@ -3,17 +3,27 @@
 function setPercentScreen(bind, portion, key, index, altScreen)
   hs.hotkey.bind(bind, key, function()
     local win = hs.window.focusedWindow()
+    
+    -- Calculate the current screen's height
+    local screen = win:screen()
+    local height = screen:frame().h
 
-    local section_width = (5120/portion) -- 5120 is the screen width
+    local primary_screen = hs.screen.primaryScreen()
+    local primary_width = primary_screen:frame().w
+
+    local second_screen = primary_screen:next()
+    local second_width = second_screen:frame().w
+
+    local section_width = (primary_width/portion)
     local xmod = 0;
     if altScreen then
-      section_width = (3440/portion) -- 3440 is the screen width for the alt screen
-      xmod = -3440
+      section_width = (second_width/portion)
+      xmod = -second_width
     end
   
     local cursize = win:size()
     cursize.w = section_width
-    cursize.h = 1440
+    cursize.h = height
     
     local f = win:frame()
     f.x = (index * section_width)+xmod
