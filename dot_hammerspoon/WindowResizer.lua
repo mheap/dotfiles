@@ -60,6 +60,7 @@ setHalfScreen("N", 0)
 setHalfScreen("M", 1)
 
 setPercentScreen({"cmd", "alt"}, 1, ".", 0)
+setPercentScreen({"cmd", "alt"}, 2, ",", 0.5)
 
 -- Unusual sizing
 setPercentScreen({"cmd", "alt", "ctrl"}, 6, "J", 3)
