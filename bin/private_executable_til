@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+NAME=$1
+DATE=$(gdate --iso-8601=seconds)
+DIR="_posts/$NAME"
+FILE="$DIR/index.md"
+
+mkdir -p $DIR
+cat << EOF > $FILE
+---
+title: ...
+description: ...
+slug: $NAME
+date: "$DATE"
+updated_at: "$DATE"
+category: "TIL"
+tags:
+  - one
+og:
+  template: til
+  tags:
+    - one
+    - two
+---
+
+...
+EOF
+
+code . $FILE
+
