@@ -12,7 +12,6 @@ compinit -C
 
 setopt AUTO_MENU                        # Show completion menu on tab press
 setopt ALWAYS_TO_END                    # Move cursor after completion
-setopt COMPLETE_ALIASES                 # Allow autocompletion for aliases
 setopt COMPLETE_IN_WORD                 # Allow completion from middle of word
 setopt LIST_PACKED                      # Smallest completion menu
 setopt AUTO_PARAM_KEYS                  # Intelligent handling of characters
@@ -25,7 +24,11 @@ SAVEHIST=100000
 setopt SHARE_HISTORY
 
 # ZPlug
+{{- if eq (env "HOMEBREW_REPOSITORY") "/opt/homebrew" }}
+export ZPLUG_HOME=/opt/homebrew/Cellar/zplug/2.4.2
+{{- else }}
 export ZPLUG_HOME=/usr/local/opt/zplug
+{{- end }}
 {{- if eq (env "CODESPACES") "true" }}
 export ZPLUG_HOME=/workspaces/.zplug
 {{- end }}
@@ -66,17 +69,20 @@ export projects="$HOME/development/projects"
 export k="$HOME/development/kong"
 
 # Path
-export PATH="/Users/michael/.local/bin:/Users/michael/.krew/bin:/Users/michael/bin:/Users/michael/go/bin:/Users/michael/.composer/vendor/bin:$PATH"
+export PATH="/Users/michael/.krew/bin:/Users/michael/.local/bin:/Users/michael/bin:/Users/michael/go/bin:/Users/michael/.composer/vendor/bin:$PATH"
 
 # Editors
 export EDITOR=vim
 export VISUAL=vim
 
+# GPG
+export GPG_TTY=$(tty)
+
 # Things that should only be installed on non-codespaces environments
 
 {{- if eq (env "CODESPACES") "" }}
 # Version Managers
-. /usr/local/opt/asdf/libexec/asdf.sh
+. $HOMEBREW_REPOSITORY/opt/asdf/libexec/asdf.sh
 
 # Helper functions
 {{ range (onepassword "ishqybkvyzgu5kg4ycsdapii4e").fields -}}
@@ -98,8 +104,8 @@ function aws-kong(){
   export AWS_DEFAULT_REGION=eu-west-2
 }
 
-source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
-source /usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
+source $HOMEBREW_REPOSITORY/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
+source $HOMEBREW_REPOSITORY/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
 
 {{- end }}
 
@@ -107,6 +113,11 @@ timezsh() {
   shell=${1-$SHELL}
   for i in $(seq 1 4); do /usr/bin/time $shell -i -c exit; done
 }
+
+source <(kubectl completion zsh)
+compdef k='kubectl'
+
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 zplug load
 
