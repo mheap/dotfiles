@@ -40,6 +40,7 @@ zplug "zsh-users/zsh-syntax-highlighting"
 zplug plugins/kubectl, from:oh-my-zsh
 zplug "skywind3000/z.lua", use:z.lua.plugin.zsh
 zplug 'djui/alias-tips'
+zplug load
 
 # Vim!
 bindkey -v
@@ -119,6 +120,5 @@ compdef k='kubectl'
 
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
-zplug load
 
 #zprof # Output profile
