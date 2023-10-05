@@ -19,5 +19,5 @@ end
 setWindowPosition("W", 1920, 1165, 2420, 0)
 
 -- 1080p Left and Right
-setWindowPosition("Q", 1920, 1165, 0, 85) -- Left
-setWindowPosition("P", 1920, 1165, 2420, 85) -- Right
+setWindowPosition("Q", 1920, 1165, 0, 285) -- Left
+setWindowPosition("P", 1920, 1080, 2420, 285) -- Right

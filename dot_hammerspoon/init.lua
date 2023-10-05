@@ -1,3 +1,4 @@
+require('Orbstack')
 require('Sleep')
 require('WindowSwitcher')
 require('WindowResizer') -- New for day to day
