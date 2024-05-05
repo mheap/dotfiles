@@ -64,6 +64,16 @@ zstyle ':completion::complete:*' cache-path "$HOME/.cache/zsh/completion/"
 zstyle ':completion:*:*:*:users' ignored-patterns '*'
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
+_call_navi() {
+  local selected
+  if selected="$(printf "$(navi --print --path ${HOME}/.navi/cheats </dev/tty)")"; then
+    LBUFFER="$selected"
+  fi
+  zle redisplay
+}
+
+zle -N _call_navi
+bindkey '^n' _call_navi
 
 export oss="$HOME/development/oss"
 export projects="$HOME/development/projects"
@@ -119,6 +129,9 @@ source <(kubectl completion zsh)
 compdef k='kubectl'
 
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+
+# Aliases
+alias tf=terraform
 
 
 #zprof # Output profile
