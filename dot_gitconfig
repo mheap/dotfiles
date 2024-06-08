@@ -15,3 +15,9 @@
 	defaultBranch = main
 [merge]
 	conflictStyle = zdiff3
+[commit]
+	gpgsign = true
+[gpg]
+	program = gpg
+[submodule]
+	recurse = true
