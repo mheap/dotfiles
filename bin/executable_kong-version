@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+CACHE_FILE="/tmp/kong-version"
+STALE_TIMEOUT=5
+
+function refresh_kong_version() {
+    # Check if the port is bound
+    lsof -n -P -i :8001 > /dev/null 2>&1
+    if [[ $? -eq 0 ]]; then
+        curl -sS localhost:8001 | jq -r .version > $CACHE_FILE
+        output_and_exit
+    else
+        echo -n "" > $CACHE_FILE
+        output_and_exit
+    fi
+}
+
+function output_and_exit() {
+    OUT=$(cat $CACHE_FILE)
+    if [[ ! -z "$OUT" ]]; then
+        echo $OUT
+        exit 0
+    else
+        exit 1
+    fi
+}
+
+## App
+
+if [[ ! -f $CACHE_FILE ]]; then
+    refresh_kong_version
+fi
+
+# Check if it needs refreshing
+NOW=$(date +%s)
+KONG_FILE=$(date -r $CACHE_FILE +%s)
+
+DIFF="$(($NOW-$KONG_FILE))"
+
+if [[ $DIFF -gt $STALE_TIMEOUT ]]; then
+    refresh_kong_version
+fi
+
+# Otherwise read from cache
+output_and_exit 
+
+

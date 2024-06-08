@@ -13,6 +13,7 @@ disabled = false
 [aws.region_aliases]
 
 [battery]
+disabled = true
 full_symbol = "🔋 "
 charging_symbol = "⚡️ "
 discharging_symbol = "💀 "
@@ -187,7 +188,7 @@ detect_folders = []
 format = 'on [$symbol$account(\($region\))]($style) '
 symbol = '☁️ '
 style = 'bold blue'
-disabled = false
+disabled = true
 
 [gcloud.region_aliases]
 
@@ -341,7 +342,7 @@ detect_folders = []
 symbol = '☸ '
 format = '[$symbol$context( \($namespace\))]($style) in '
 style = 'cyan bold'
-disabled = true
+disabled = false
 
 [kubernetes.context_aliases]
 
@@ -652,4 +653,13 @@ detect_files = []
 detect_folders = []
 
 [custom]
+
+[custom.kong-ver]
+command = "cat /tmp/kong-version"
+when = "kong-version"
+symbol = ""
+ignore_timeout = true
+format = "with [$symbol ($output)]($style) "
+style = 'yellow'
+
 
