@@ -92,18 +92,17 @@ export GPG_TTY=$(tty)
 # Things that should only be installed on non-codespaces environments
 
 {{- if eq (env "CODESPACES") "" }}
-# Version Managers
-. $HOMEBREW_REPOSITORY/opt/asdf/libexec/asdf.sh
 
 # Helper functions
-{{ range (onepassword "ishqybkvyzgu5kg4ycsdapii4e").fields -}}
-{{   if eq .id "0392FBAD092D4943B2928F4A5FBCF075" -}}
 function token() {
-  export GITHUB_TOKEN='{{ .value -}}'
+  export GITHUB_TOKEN=$(op read "op://CLI/GitHub/GITHUB_TOKEN")
   echo "GITHUB_TOKEN Set";
 }
-{{   end -}}
-{{ end }}
+
+function ktoken() {
+  export KONNECT_TOKEN=$(op read "op://CLI/Konnect/KONNECT_TOKEN")
+  echo "KONNECT_TOKEN Set";
+}
 
 function aws-personal(){
   export AWS_PROFILE=personal
@@ -115,23 +114,21 @@ function aws-kong(){
   export AWS_DEFAULT_REGION=eu-west-2
 }
 
+# GCP
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 source $HOMEBREW_REPOSITORY/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
 source $HOMEBREW_REPOSITORY/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
 
+# Enable mise
+eval "$(mise activate zsh)"
+
 {{- end }}
 
-timezsh() {
-  shell=${1-$SHELL}
-  for i in $(seq 1 4); do /usr/bin/time $shell -i -c exit; done
-}
-
+# Kubernetes
 source <(kubectl completion zsh)
 compdef k='kubectl'
 
-export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-
 # Aliases
 alias tf=terraform
-
 
 #zprof # Output profile
