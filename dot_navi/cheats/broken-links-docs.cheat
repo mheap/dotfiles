@@ -1,0 +1,4 @@
+% broken-links-doc
+
+# check broken links in docs
+GITHUB_REPOSITORY=Kong/docs.konghq.com node run.js pr --pr <PR> --is_fork 0

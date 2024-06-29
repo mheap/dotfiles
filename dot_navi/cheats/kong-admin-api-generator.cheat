@@ -1,0 +1,9 @@
+% kong-admin-generator-konnect-plugins
+
+# generate OpenAPI spec with plugins
+go run . -cmd gen -product konnect -add-speakeasy-annotations -add-plugin-schemas; cp work/openapi.yaml ../platform-api/src/konnect/definitions/control-planes-config/v2/generated-with-plugins.yaml
+
+% kong-admin-generator-konnect
+
+# generate OpenAPI spec without plugins
+go run . -cmd gen -product konnect -add-speakeasy-annotations; cp work/openapi.yaml ../platform-api/src/konnect/definitions/control-planes-config/v2/generated.yaml

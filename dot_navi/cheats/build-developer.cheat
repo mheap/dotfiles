@@ -1,7 +1,7 @@
-% build-docs
+% build-developer
 
-# build kong docs
-KONG_PRODUCTS="<PRODUCT><VERSIONS>" make run
+# build kong developer
+fswatch -0 -o ./app/_tutorials ./app/_layouts ./app/_includes ./app/_plugins ./app/_landing_pages | xargs -0 -n1 -I {} bundle exec jekyll build --config jekyll.yml --profile
 
 $ PRODUCT: cat ~/development/kong/docs.konghq.com/app/_data/kong_versions.yml| yq '[.[].edition] | unique | .[]'
 $ VERSION: echo -e '\nlatest\n3.6.x\nunreleased' --- --multi --map "grep '.' | tr '\n' ';' | sed -e 's/;$//'" 

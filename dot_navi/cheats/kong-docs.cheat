@@ -1,4 +1,4 @@
-% build-docs
+% docs-build
 
 # build kong docs
 KONG_PRODUCTS="<PRODUCT><VERSIONS>" make run
@@ -6,3 +6,8 @@ KONG_PRODUCTS="<PRODUCT><VERSIONS>" make run
 $ PRODUCT: cat ~/development/kong/docs.konghq.com/app/_data/kong_versions.yml| yq '[.[].edition] | unique | .[]'
 $ VERSION: echo -e '\nlatest\n3.6.x\nunreleased' --- --multi --map "grep '.' | tr '\n' ';' | sed -e 's/;$//'" 
 $ VERSIONS: if [[ ! -z "$VERSION" ]]; then echo -n ":"; fi; echo "<VERSION>"
+
+% docs-check-broken-links
+
+# check broken links in docs
+GITHUB_REPOSITORY=Kong/docs.konghq.com node run.js pr --pr <PR> --is_fork 0
