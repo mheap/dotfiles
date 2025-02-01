@@ -21,3 +21,5 @@
 	program = gpg
 [submodule]
 	recurse = true
+[diff]
+        submodule = log
