@@ -5,8 +5,22 @@
 	excludesfile = /Users/michael/.gitignore_global
 	defaultBranch = main
 [alias]
-    wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
-    upstream = !git fetch upstream && git reset --hard upstream/main
+	wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
+	upstream = !git fetch upstream && git reset --hard upstream/main
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+[tag]
+	sort = version:refname
+[fetch]
+	prune = true
+	pruneTags = true
+	all = true
+[push]
+	default = simple
+	autoSetupRemote = true
+	followTags = true
 [pull]
 	ff = only
 [url "git@github.com:mheap"]
@@ -15,11 +29,34 @@
 	defaultBranch = main
 [merge]
 	conflictStyle = zdiff3
+[rebase]
+	autoSquash = true
+	autoStash = true
+	updateRefs = true
 [commit]
 	gpgsign = true
+	verbose = true
 [gpg]
 	program = gpg
 [submodule]
 	recurse = true
 [diff]
-        submodule = log
+	submodule = log
+	algorithm = histogram
+	colorMoved = plain
+	mnemonicPrefix = true
+	renames = true
+[interactive]
+	diffFilter = delta --color-only
+
+[delta]
+	navigate = true	# use n and N to move between diff sections
+	# delta detects terminal colors automatically; set one of these to disable auto-detection
+	# dark = true
+	# light = true
+
+[help]
+	autocorrect = prompt
+[rerere]
+	enabled = true
+	autoupdate = true
