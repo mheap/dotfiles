@@ -7,8 +7,6 @@
 [alias]
 	wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
 	upstream = !git fetch upstream && git reset --hard upstream/main
-[column]
-	ui = auto
 [branch]
 	sort = -committerdate
 [tag]
