@@ -17,11 +17,14 @@ setopt LIST_PACKED                      # Smallest completion menu
 setopt AUTO_PARAM_KEYS                  # Intelligent handling of characters
 setopt AUTO_PARAM_SLASH                 # after a completion
 setopt AUTO_REMOVE_SLASH                # Remove trailing slash when needed
+setopt COMPLETE_ALIASES                 # Expand k to kongctl before running completion
 
 HISTFILE=~/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
 setopt SHARE_HISTORY
+
+echo 'eval "$(atuin init zsh --disable-up-arrow)"' >> ~/.zshrc
 
 # ZPlug
 {{- if eq (env "HOMEBREW_REPOSITORY") "/opt/homebrew" }}
@@ -43,6 +46,7 @@ zplug 'djui/alias-tips'
 zplug load
 
 # Vim!
+ZVM_CURSOR_STYLE_ENABLED=false
 bindkey -v
 bindkey -M viins 'jj' vi-cmd-mode
 bindkey -M vicmd "^V" edit-command-line
@@ -65,8 +69,11 @@ zstyle ':completion:*:*:*:users' ignored-patterns '*'
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 
 _call_navi() {
+  if [[ -z "$NAVI_SET" ]]; then
+    NAVI_SET="cheats"
+  fi
   local selected
-  if selected="$(printf "$(navi --print --path ${HOME}/.navi/cheats </dev/tty)")"; then
+  if selected="$(printf "$(navi --print --path ${HOME}/.navi/$NAVI_SET </dev/tty)")"; then
     LBUFFER="$selected"
   fi
   zle redisplay
@@ -125,10 +132,15 @@ eval "$(mise activate zsh)"
 {{- end }}
 
 # Kubernetes
+alias k=kubectl
 source <(kubectl completion zsh)
-compdef k='kubectl'
 
 # Aliases
 alias tf=terraform
+
+# kongctl
+export XDG_CONFIG_HOME="/Users/michael/.config"
+alias ko=kongctl
+source <(kongctl completion zsh)
 
 #zprof # Output profile
