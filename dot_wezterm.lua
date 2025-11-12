@@ -116,5 +116,8 @@ config.quick_select_patterns = {
   '[0-9a-f]{3,40}/',
 }
 
+config.send_composed_key_when_left_alt_is_pressed = true
+config.send_composed_key_when_right_alt_is_pressed = true
+
 -- Finally, return the configuration to wezterm:
 return config
