@@ -24,7 +24,7 @@ HISTSIZE=100000
 SAVEHIST=100000
 setopt SHARE_HISTORY
 
-echo 'eval "$(atuin init zsh --disable-up-arrow)"' >> ~/.zshrc
+eval "$(atuin init zsh --disable-up-arrow)"
 
 # ZPlug
 {{- if eq (env "HOMEBREW_REPOSITORY") "/opt/homebrew" }}
@@ -137,6 +137,9 @@ source <(kubectl completion zsh)
 
 # Aliases
 alias tf=terraform
+function mkcd() {
+  mkdir -p $1 && cd $1
+}
 
 # kongctl
 export XDG_CONFIG_HOME="/Users/michael/.config"
