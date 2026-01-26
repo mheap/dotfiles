@@ -147,3 +147,11 @@ alias ko=kongctl
 source <(kongctl completion zsh)
 
 #zprof # Output profile
+
+function rollup-github(){
+  gh search prs --author @me --created ">=$1" --sort created --order desc --owner kong \
+  --json number,title,repository,url,createdAt,state \
+  --template '{{`{{range .}}{{printf "%s\n%s (%s) [%s]\n\n" .title .url .state .repository.nameWithOwner }}{{end}}`}}'
+}
+
+function vibe() { bash -lc "$(agent-en-place $1)" }
