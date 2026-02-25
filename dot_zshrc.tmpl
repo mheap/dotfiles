@@ -157,3 +157,5 @@ function rollup-github(){
 }
 
 function vibe() { bash -lc "$(agent-en-place $1)" }
+
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
