@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# ---- Guard: require at least 2 monitors ----
+monitor_count="$(aerospace list-monitors | wc -l | tr -d ' ')"
+if [[ "$monitor_count" -lt 2 ]]; then
+  exit 0
+fi
+
+# ---- Identify main + first non-main (secondary) monitor IDs ----
+read -r main_id sec_id < <(
+  aerospace list-monitors --format '%{monitor-id} %{monitor-is-main}' \
+  | awk '
+      $2=="true"  { main=$1 }
+      $2=="false" && sec=="" { sec=$1 }
+      END {
+        if (main=="" || sec=="") exit 1
+        print main, sec
+      }'
+) || exit 0
+
+# ---- Capture visible workspaces BEFORE moving anything ----
+main_ws="$(aerospace list-workspaces --monitor "$main_id" --visible --format '%{workspace}' | head -n1)"
+sec_ws="$(aerospace list-workspaces --monitor "$sec_id"  --visible --format '%{workspace}' | head -n1)"
+
+# Nothing to do if missing or identical
+if [[ -z "${main_ws}" || -z "${sec_ws}" || "${main_ws}" == "${sec_ws}" ]]; then
+  exit 0
+fi
+
+# ---- Swap using summon-workspace ----
+aerospace focus-monitor "$main_id"
+aerospace summon-workspace "$sec_ws"
+sleep 0.05
+
+aerospace focus-monitor "$sec_id"
+aerospace summon-workspace "$main_ws"
+sleep 0.05
+
+# Optional: return focus to main
+aerospace focus-monitor "$main_id"

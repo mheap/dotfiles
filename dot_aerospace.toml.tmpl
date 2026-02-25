@@ -1,0 +1,118 @@
+# Start AeroSpace at login
+start-at-login = true
+after-login-command = []
+
+after-startup-command = [
+  'exec-and-forget borders active_color=0xffff4200 inactive_color=0xff494d64 width=7.0',
+]
+
+# Normalizations. See: https://nikitabobko.github.io/AeroSpace/guide#normalization
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+# See: https://nikitabobko.github.io/AeroSpace/guide#layouts
+# The 'accordion-padding' specifies the size of accordion padding
+# You can set 0 to disable the padding feature
+accordion-padding = 0
+
+# Possible values: tiles|accordion
+default-root-container-layout = 'tiles'
+
+# Possible values: horizontal|vertical|auto
+# 'auto' means: wide monitor (anything wider than high) gets horizontal orientation,
+#               tall monitor (anything higher than wide) gets vertical orientation
+default-root-container-orientation = 'auto'
+
+# Possible values: (qwerty|dvorak)
+# See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
+key-mapping.preset = 'qwerty'
+
+# Gaps between windows (inner-*) and between monitor edges (outer-*).
+# Possible values:
+# - Constant:     gaps.outer.top = 8
+# - Per monitor:  gaps.outer.top = [{ monitor.main = 16 }, { monitor."some-pattern" = 32 }, 24]
+#                 In this example, 24 is a default value when there is no match.
+#                 Monitor pattern is the same as for 'workspace-to-monitor-force-assignment'.
+#                 See: https://nikitabobko.github.io/AeroSpace/guide#assign-workspaces-to-monitors
+[gaps]
+inner.horizontal = 0
+inner.vertical =   0
+outer.left =       0
+outer.bottom =     0
+outer.top =        0
+outer.right =      0
+
+# See https://nikitabobko.github.io/AeroSpace/guide#exec-env-vars
+[exec]                   # Again, you don't need to copy all config sections to your config.
+inherit-env-vars = true  # If you don't touch "exec" section,
+[exec.env-vars]          # it will fallback to "default-config.toml"
+PATH = '/opt/homebrew/bin:/opt/homebrew/sbin:${PATH}'
+
+# All possible keys:
+# - Letters.        a, b, c, ..., z
+# - Numbers.        0, 1, 2, ..., 9
+# - Keypad numbers. keypad0, keypad1, keypad2, ..., keypad9
+# - F-keys.         f1, f2, ..., f20
+# - Special keys.   minus, equal, period, comma, slash, backslash, quote, semicolon, backtick,
+#                   leftSquareBracket, rightSquareBracket, space, enter, esc, backspace, tab
+# - Keypad special. keypadClear, keypadDecimalMark, keypadDivide, keypadEnter, keypadEqual,
+#                   keypadMinus, keypadMultiply, keypadPlus
+# - Arrows.         left, down, up, right
+
+# All possible modifiers: cmd, alt, ctrl, shift
+
+[mode.main.binding]
+alt-ctrl-cmd-enter = 'exec-and-forget open -n /Applications/Wezterm.app'
+alt-ctrl-cmd-s = 'exec-and-forget ~/bin/aerospace-swap-main-secondary'
+ 
+# See: https://nikitabobko.github.io/AeroSpace/commands#layout
+alt-slash = 'layout tiles horizontal vertical'
+alt-comma = 'layout accordion horizontal vertical'
+alt-ctrl-cmd-shift-f = 'fullscreen'
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#focus
+alt-h = 'focus left'
+alt-j = 'focus down'
+alt-k = 'focus up'
+alt-l = 'focus right'
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#move
+alt-ctrl-cmd-h = 'move left'
+alt-ctrl-cmd-j = 'move down'
+alt-ctrl-cmd-k = 'move up'
+alt-ctrl-cmd-l = 'move right'
+
+# Join layouts
+alt-shift-h = ['join-with left', 'mode main']
+alt-shift-j = ['join-with down', 'mode main']
+alt-shift-k = ['join-with up', 'mode main']
+alt-shift-l = ['join-with right', 'mode main']
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#resize
+alt-ctrl-cmd-minus = 'resize smart -50'
+alt-ctrl-cmd-equal = 'resize smart +50'
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#summon-workspace
+{{- range $i := until 13 }}
+{{ $v := printf "%x" (add $i 1) -}}
+alt-ctrl-cmd-{{ $v }} = 'workspace {{ $v }}'
+{{- end }}
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
+{{- range $i := until 13 }}
+{{ $v := printf "%x" (add $i 1) -}}
+alt-ctrl-cmd-shift-{{ $v }} = 'move-node-to-workspace {{ $v }}'
+{{- end }}
+
+# See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
+cmd-alt-ctrl-tab = 'workspace-back-and-forth'
+# See: https://nikitabobko.github.io/AeroSpace/commands#move-workspace-to-monitor
+cmd-alt-ctrl-shift-tab = 'move-workspace-to-monitor --wrap-around next'
+
+# Service mode bindings
+alt-ctrl-cmd-semicolon = 'mode service'
+[mode.service.binding]
+esc = ['reload-config', 'mode main']
+r = ['flatten-workspace-tree', 'mode main'] # reset layout
+#s = ['layout sticky tiling', 'mode main'] # sticky is not yet supported https://github.com/nikitabobko/AeroSpace/issues/2
+f = ['layout floating tiling', 'mode main'] # Toggle between floating and tiling layout
