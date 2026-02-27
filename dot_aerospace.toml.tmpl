@@ -95,7 +95,7 @@ alt-ctrl-cmd-equal = 'resize smart +50'
 # See: https://nikitabobko.github.io/AeroSpace/commands#summon-workspace
 {{- range $i := until 13 }}
 {{ $v := printf "%x" (add $i 1) -}}
-alt-ctrl-cmd-{{ $v }} = 'workspace {{ $v }}'
+alt-ctrl-cmd-{{ $v }} = 'summon-workspace {{ $v }}'
 {{- end }}
 
 # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
