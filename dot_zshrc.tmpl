@@ -1,23 +1,55 @@
 #zmodload zsh/zprof
 eval "$(starship init zsh)"
+typeset -U path PATH
 
-autoload -U promptinit; promptinit
+#
+# Completion
+#
 
-# Load Autocomplete, but only parse completion files once per day
+ZSH_COMPLETION_CACHE="$HOME/.cache/zsh/completion"
+[[ -d "$ZSH_COMPLETION_CACHE" ]] || mkdir -p "$ZSH_COMPLETION_CACHE"
+
+fpath=("$ZSH_COMPLETION_CACHE" $fpath)
+
+KONGCTL_COMPLETION="$ZSH_COMPLETION_CACHE/_kongctl"
+if [[ ! -f "$KONGCTL_COMPLETION" || "$KONGCTL_COMPLETION"(N.mh+24) ]]; then
+  kongctl completion zsh >| "$KONGCTL_COMPLETION"
+fi
+
+KUBECTL_COMPLETION="$ZSH_COMPLETION_CACHE/_kubectl"
+if [[ ! -f "$KUBECTL_COMPLETION" || "$KUBECTL_COMPLETION"(N.mh+24) ]]; then
+  kubectl completion zsh >| "$KUBECTL_COMPLETION"
+fi
+
 autoload -Uz compinit
+
 for dump in ~/.zcompdump(N.mh+24); do
   compinit
 done
 compinit -C
 
-setopt AUTO_MENU                        # Show completion menu on tab press
-setopt ALWAYS_TO_END                    # Move cursor after completion
-setopt COMPLETE_IN_WORD                 # Allow completion from middle of word
-setopt LIST_PACKED                      # Smallest completion menu
-setopt AUTO_PARAM_KEYS                  # Intelligent handling of characters
-setopt AUTO_PARAM_SLASH                 # after a completion
-setopt AUTO_REMOVE_SLASH                # Remove trailing slash when needed
-setopt COMPLETE_ALIASES                 # Expand k to kongctl before running completion
+setopt AUTO_MENU
+setopt ALWAYS_TO_END
+setopt COMPLETE_IN_WORD
+setopt LIST_PACKED
+setopt AUTO_PARAM_KEYS
+setopt AUTO_PARAM_SLASH
+setopt AUTO_REMOVE_SLASH
+setopt COMPLETE_ALIASES
+
+zstyle ':completion:*' list-colors ''
+zstyle ':completion:*:*:*:*:*' menu select
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path "$ZSH_COMPLETION_CACHE"
+zstyle ':completion:*:*:*:users' ignored-patterns '*'
+zstyle ':completion:*' matcher-list \
+    'm:{a-z}={A-Z}' \
+    'r:|[._-]=* r:|=*' \
+    'l:|=* r:|=*'
+
+#
+# History
+#
 
 HISTFILE=~/.zsh_history
 HISTSIZE=100000
@@ -26,136 +58,176 @@ setopt SHARE_HISTORY
 
 eval "$(atuin init zsh --disable-up-arrow)"
 
-# ZPlug
-{{- if eq (env "HOMEBREW_REPOSITORY") "/opt/homebrew" }}
-export ZPLUG_HOME=/opt/homebrew/Cellar/zplug/2.4.2
-{{- else }}
-export ZPLUG_HOME=/usr/local/opt/zplug
-{{- end }}
-{{- if eq (env "CODESPACES") "true" }}
-export ZPLUG_HOME=/workspaces/.zplug
-{{- end }}
-source $ZPLUG_HOME/init.zsh
+#
+# Plugins (Antidote)
+#
 
-# Plugins
-zplug "zsh-users/zsh-history-substring-search"
-zplug "zsh-users/zsh-syntax-highlighting"
-zplug plugins/kubectl, from:oh-my-zsh
-zplug "skywind3000/z.lua", use:z.lua.plugin.zsh
-zplug 'djui/alias-tips'
-zplug load
+source "$(brew --prefix)/opt/antidote/share/antidote/antidote.zsh"
 
-# Vim!
+if [[ ! -f ~/.zsh_plugins.zsh || ~/.zsh_plugins.txt -nt ~/.zsh_plugins.zsh ]]; then
+    antidote bundle < ~/.zsh_plugins.txt > ~/.zsh_plugins.zsh
+fi
+
+source ~/.zsh_plugins.zsh
+
+#
+# Vi mode
+#
+
 ZVM_CURSOR_STYLE_ENABLED=false
+
 bindkey -v
 bindkey -M viins 'jj' vi-cmd-mode
-bindkey -M vicmd "^V" edit-command-line
+bindkey -M vicmd '^V' edit-command-line
 
-if zplug check zsh-users/zsh-history-substring-search; then
-  bindkey -M vicmd 'k' history-substring-search-up
-  bindkey -M vicmd 'j' history-substring-search-down
+if (( ${+functions[history-substring-search-up]} )); then
+    bindkey -M vicmd k history-substring-search-up
+    bindkey -M vicmd j history-substring-search-down
 fi
 
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
 
-autoload edit-command-line; zle -N edit-command-line
+autoload edit-command-line
+zle -N edit-command-line
 
-zstyle ':completion:*' list-colors ''
-zstyle ':completion:*:*:*:*:*' menu select
-zstyle ':completion::complete:*' use-cache on
-zstyle ':completion::complete:*' cache-path "$HOME/.cache/zsh/completion/"
-zstyle ':completion:*:*:*:users' ignored-patterns '*'
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+#
+# Navi
+#
 
 _call_navi() {
-  if [[ -z "$NAVI_SET" ]]; then
-    NAVI_SET="cheats"
-  fi
-  local selected
-  if selected="$(printf "$(navi --print --path ${HOME}/.navi/$NAVI_SET </dev/tty)")"; then
-    LBUFFER="$selected"
-  fi
-  zle redisplay
+    [[ -z "$NAVI_SET" ]] && NAVI_SET=cheats
+
+    local selected
+
+    if selected="$(printf "$(navi --print --path "$HOME/.navi/$NAVI_SET" </dev/tty)")"; then
+        LBUFFER="$selected"
+    fi
+
+    zle redisplay
 }
 
 zle -N _call_navi
 bindkey '^n' _call_navi
 
+#
+# Paths
+#
+
 export oss="$HOME/development/oss"
 export projects="$HOME/development/projects"
 export k="$HOME/development/kong"
 
-# Path
-export PATH="/Users/michael/.krew/bin:/Users/michael/.local/bin:/Users/michael/bin:/Users/michael/go/bin:/Users/michael/.composer/vendor/bin:$PATH"
+export PATH="$HOME/.krew/bin:$HOME/.local/bin:$HOME/bin:$HOME/go/bin:$HOME/.composer/vendor/bin:$PATH"
 
+#
 # Editors
+#
+
 export EDITOR=vim
 export VISUAL=vim
 
+#
 # GPG
-export GPG_TTY=$(tty)
+#
 
-# Things that should only be installed on non-codespaces environments
+export GPG_TTY="$TTY"
 
 {{- if eq (env "CODESPACES") "" }}
 
+#
 # Helper functions
-function token() {
-  export GITHUB_TOKEN=$(op read "op://CLI/GitHub/GITHUB_TOKEN")
-  echo "GITHUB_TOKEN Set";
+#
+
+token() {
+    export GITHUB_TOKEN="$(op read "op://CLI/GitHub/GITHUB_TOKEN")"
+    echo "GITHUB_TOKEN set"
 }
 
-function ktoken() {
-  export KONNECT_TOKEN=$(op read "op://CLI/Konnect/KONNECT_TOKEN")
-  echo "KONNECT_TOKEN Set";
+ktoken() {
+    export KONNECT_TOKEN="$(op read "op://CLI/Konnect/KONNECT_TOKEN")"
+    echo "KONNECT_TOKEN set"
 }
 
-function aws-personal(){
-  export AWS_PROFILE=personal
-  export AWS_DEFAULT_REGION=eu-west-2
+aws-personal() {
+    export AWS_PROFILE=personal
+    export AWS_DEFAULT_REGION=eu-west-2
 }
 
-function aws-kong(){
-  export AWS_PROFILE=kong
-  export AWS_DEFAULT_REGION=eu-west-2
+aws-kong() {
+    export AWS_PROFILE=kong
+    export AWS_DEFAULT_REGION=eu-west-2
 }
 
-# GCP
-if [[ -f "$HOMEBREW_REPOSITORY/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ]]; then
-export USE_GKE_GCLOUD_AUTH_PLUGIN=True
-source $HOMEBREW_REPOSITORY/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc
-source $HOMEBREW_REPOSITORY/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc
+# Google Cloud SDK, lazy-loaded
+{{ if eq (env "HOMEBREW_PREFIX") "/opt/homebrew" }}
+GCLOUD_SDK=/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk
+{{ else }}
+GCLOUD_SDK=/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk
+{{ end }}
+
+if [[ -d "$GCLOUD_SDK" ]]; then
+  export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+  path=("$GCLOUD_SDK/bin" $path)
+
+  gcloud() {
+    unfunction gcloud
+
+    [[ -f "$GCLOUD_SDK/path.zsh.inc" ]] && source "$GCLOUD_SDK/path.zsh.inc"
+    [[ -f "$GCLOUD_SDK/completion.zsh.inc" ]] && source "$GCLOUD_SDK/completion.zsh.inc"
+
+    command gcloud "$@"
+  }
 fi
 
-# Enable mise
+#
+# mise
+#
+
 eval "$(mise activate zsh)"
 
 {{- end }}
 
-# Kubernetes
-alias k=kubectl
-source <(kubectl completion zsh)
-
+#
 # Aliases
-alias tf=terraform
-function mkcd() {
-  mkdir -p $1 && cd $1
-}
+#
 
-# kongctl
-export XDG_CONFIG_HOME="/Users/michael/.config"
+alias k=kubectl
 alias ko=kongctl
-source <(kongctl completion zsh)
+alias tf=terraform
 
-#zprof # Output profile
-
-function rollup-github(){
-  gh search prs --author @me --created ">=$1" --sort created --order desc --owner kong \
-  --json number,title,repository,url,createdAt,state \
-  --template '{{`{{range .}}{{printf "%s\n%s (%s) [%s]\n\n" .title .url .state .repository.nameWithOwner }}{{end}}`}}'
+mkcd() {
+    mkdir -p "$1" && cd "$1"
 }
 
-function vibe() { bash -lc "$(agent-en-place $1)" }
+#
+# kongctl
+#
 
-if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+export XDG_CONFIG_HOME="$HOME/.config"
+
+#
+# Utilities
+#
+
+vibe() {
+    bash -lc "$(agent-en-place "$1")"
+}
+
+wt() {
+    unfunction wt
+    eval "$(command wt config shell init zsh)"
+    wt "$@"
+}
+
+#
+# zoxide
+#
+
+# zoxide
+if (( $+commands[zoxide] )); then
+  eval "$(zoxide init zsh)"
+fi
+
+
+#zprof
